@@ -1,0 +1,69 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.5"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "BitsAndDroidsFlight32",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "BitsAndDroidsFlight32::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-BitsAndDroidsFlight32-Debug-d828cbe3b9ca2728c720.json",
+					"name" : "BitsAndDroidsFlight32",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "leonardo_CORE::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-leonardo_CORE-Debug-114d304a5722222fef47.json",
+					"name" : "leonardo_CORE",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/Dave Riedel/Documents/Arduino/libraries/BitsAndDroidsFlight32/cmake-build-debug",
+		"source" : "C:/Users/Dave Riedel/Documents/Arduino/libraries/BitsAndDroidsFlight32"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}
