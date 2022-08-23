@@ -31,7 +31,15 @@ byte mode = RADIO;
 bool radioDrawn = false;
 bool fuelDrawn = false;
 bool g1000IsDrawn = false;
+bool altDrawn = false;
 float oldComs[2];
+
+void resetDrawBooleans(){
+    radioDrawn = false;
+    fuelDrawn = false;
+    g1000IsDrawn = false;
+    altDrawn = false;
+}
 
 int16_t mainBgColor = TFT_BLACK;
 
@@ -185,6 +193,7 @@ int radioActions[] = {sendATCMenu1,sendATCMenu2,sendATCMenu3,sendATCMenu4,sendAT
 byte buttonTextArray[10] = {1,2,3,4,5,6,7,8,9,0};
 byte buttonTextArrayG1000[12] = {1,2,3,4,5,6,7,8,9,10,11,12};
 roundedSquare buttonArray[12] = {{0}};
+
 void addButtons(){
     tft.setFreeFont(FSSB12);
     int size = 10;
@@ -308,8 +317,7 @@ void initializeRadio(){
 void radioMode(){
     if(!radioDrawn){
         initializeRadio();
-        fuelDrawn = false;
-        g1000IsDrawn = false;
+        resetDrawBooleans();
         radioDrawn = true;
     }
     float com1Active;
@@ -367,6 +375,7 @@ roundedSquare g1000Menu = {
         static_cast<int16_t>(0xF693),
         5005
 };
+
 roundedSquare g1000Procedure = {
         xMargin,
         g1000Menu.height + g1000Menu.yStart +margin,
@@ -385,6 +394,7 @@ roundedSquare g1000FPLN = {
         static_cast<int16_t>(0xF693),
         5007
 };
+
 roundedSquare g1000Plus = {
         g1000FPLN.xStart + g1000FPLN.width + margin,
         margin,
@@ -403,6 +413,7 @@ roundedSquare g1000Min = {
         static_cast<int16_t>(0xF693),
         5009
 };
+
 roundedSquare g1000Dir = {
         g1000Menu.xStart + g1000Menu.width + margin,
         g1000Plus.yStart+g1000Plus.height + margin,
@@ -412,6 +423,7 @@ roundedSquare g1000Dir = {
         static_cast<int16_t>(0xF693),
         5010
 };
+
 roundedSquare g1000Clear = {
         g1000Dir.xStart + g1000Dir.width + margin,
         g1000Plus.yStart+g1000Plus.height + margin,
@@ -428,6 +440,7 @@ char* radioHeaders[] = {"COM 1", "COM 2", "NAV 1", "NAV 2"};
 void g1000Mode(){
     if(!g1000IsDrawn){
         tft.fillScreen(TFT_BLACK);
+        resetDrawBooleans();
         g1000IsDrawn = true;
         addButtons();
 
@@ -600,7 +613,7 @@ byte oldRAux;
 
 void initFuelScreen(){
     tft.fillScreen(TFT_BLACK);
-    radioDrawn = false;
+
     byte bars = 4;
     byte width = 20;
 
@@ -649,6 +662,7 @@ void fuelMode(){
     byte rightMainFuel = connector.getFuelTankRightMainLevel();
     byte rightAuxFuel = connector.getFuelTankRightAuxLevel();
     if(!fuelDrawn){
+        resetDrawBooleans();
         initFuelScreen();
         fuelDrawn = true;
 
@@ -689,15 +703,13 @@ void fuelMode(){
 
 }
 
-
-
-
 void touchCheck(){
     bool pressed = tft.getTouch(&t_x, &t_y);
     if(pressed){
         registeredTouch();
     }
 }
+
 void setup(){
     Serial.begin(115200);
     mode = RADIO;
@@ -715,18 +727,18 @@ void setup(){
     initializeRadio();
 }
 
-bool altModeInitialized = false;
+
 void initAltMode(){
-    altModeInitialized = true;
     tft.fillScreen(TFT_BLACK);
 }
 
 int oldAlt = 0;
 void altMode(){
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
-    tft.setTextSize(28);
-    if(!altModeInitialized){
+    if(!altDrawn){
         initAltMode();
+        resetDrawBooleans();
+        altDrawn = true;
     }
     int curAlt = connector.getCurAltC();
     if(oldAlt != curAlt){

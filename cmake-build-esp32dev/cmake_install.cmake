@@ -1,8 +1,8 @@
-# Install script for directory: C:/Users/Dave Riedel/Documents/Arduino/lcdFinal
+# Install script for directory: C:/Users/dave-/Documents/GitHub/FlightCompanion
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/lcdFinal")
+  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/FlightCompanion")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -34,7 +34,7 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "C:/QtWindows/Tools/mingw810_64/bin/objdump.exe")
+  set(CMAKE_OBJDUMP "C:/Qt/Tools/mingw730_64/bin/objdump.exe")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/Dave Riedel/Documents/Arduino/lcdFinal/cmake-build-esp32dev/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/dave-/Documents/GitHub/FlightCompanion/cmake-build-esp32dev/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
