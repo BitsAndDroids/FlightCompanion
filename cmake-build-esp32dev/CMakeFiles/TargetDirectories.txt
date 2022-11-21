@@ -1,5 +1,5 @@
-C:/Users/dave-/Documents/GitHub/FlightCompanion/cmake-build-esp32dev/CMakeFiles/Production.dir
-C:/Users/dave-/Documents/GitHub/FlightCompanion/cmake-build-esp32dev/CMakeFiles/edit_cache.dir
-C:/Users/dave-/Documents/GitHub/FlightCompanion/cmake-build-esp32dev/CMakeFiles/Debug.dir
-C:/Users/dave-/Documents/GitHub/FlightCompanion/cmake-build-esp32dev/CMakeFiles/Z_DUMMY_TARGET.dir
-C:/Users/dave-/Documents/GitHub/FlightCompanion/cmake-build-esp32dev/CMakeFiles/rebuild_cache.dir
+C:/Users/Dave Riedel/Documents/Arduino/lcdFinal/cmake-build-esp32dev/CMakeFiles/Production.dir
+C:/Users/Dave Riedel/Documents/Arduino/lcdFinal/cmake-build-esp32dev/CMakeFiles/Debug.dir
+C:/Users/Dave Riedel/Documents/Arduino/lcdFinal/cmake-build-esp32dev/CMakeFiles/Z_DUMMY_TARGET.dir
+C:/Users/Dave Riedel/Documents/Arduino/lcdFinal/cmake-build-esp32dev/CMakeFiles/edit_cache.dir
+C:/Users/Dave Riedel/Documents/Arduino/lcdFinal/cmake-build-esp32dev/CMakeFiles/rebuild_cache.dir

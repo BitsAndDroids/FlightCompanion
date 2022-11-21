@@ -5,11 +5,11 @@
 #include <BitsAndDroidsFlight32.h>
 #include <ESP32Encoder.h>
 #include "Free_Fonts.h"
-//Here we create the TFT object. 
-//The tft object is of the type TFT_eSPI. 
-//By referencing this variable we can perform actions (excecute functions) with our TFT screen
+#include "elements.h"
 
-byte btnDual =  5;
+//TODO CUT UP THIS FILE INTO SEPERATE UTIL LIBRARY
+
+byte btnDual =  32;
 byte btnLower = 12;
 
 TFT_eSPI tft = TFT_eSPI();
@@ -44,9 +44,6 @@ void resetDrawBooleans(){
 int16_t mainBgColor = TFT_BLACK;
 
 //We can replace the fillRect function in the initializeRadio function with the following line
-
-int margin = 20;
-int xMargin = 30;
 int screenWidth = tft.getViewportHeight();
 int screenHeight = tft.getViewportWidth();
 //Keeps track which com to display com 1, 2, nav 1,2
@@ -208,7 +205,7 @@ void addButtons(){
         //These values are shared accross each button
         int height = 50;
         int width = 50;
-        int16_t color = 0xF693;
+        auto color = static_cast<int16_t>(0xF693);
         byte cornerRadius = 4;
 
         //Because each column has the same X starting coordinate
@@ -274,10 +271,10 @@ void setCom(byte place,float text){
 
     if(place == 0){
 
-        tft.drawFloat(text / 1000,3,xMargin+15,yText);
+        tft.drawFloat(text,3,xMargin+15,yText);
 
     } else{
-        tft.drawFloat(text/ 1000,3,swapButton.xStart + swapButton.width+15,yText);
+        tft.drawFloat(text,3,swapButton.xStart + swapButton.width+15,yText);
     }
 }
 
@@ -310,8 +307,8 @@ void initializeRadio(){
     }
 
 
-    setCom(0,connector.getActiveCom1());
-    setCom(1,connector.getStandbyCom1());
+    setCom(0,(float)connector.getActiveCom1() / 1000);
+    setCom(1,(float)connector.getStandbyCom1() / 1000);
 }
 
 void radioMode(){
@@ -324,24 +321,24 @@ void radioMode(){
     float com1Standby;
     switch(radioDisplayed){
         case 0:
-            com1Active = connector.getActiveCom1();
-            com1Standby = connector.getStandbyCom1();
+            com1Active = (float)connector.getActiveCom1() / 1000;
+            com1Standby = (float)connector.getStandbyCom1()/ 1000;
             break;
         case 1:
-            com1Active = connector.getActiveCom2();
-            com1Standby = connector.getStandbyCom2();
+            com1Active = (float)connector.getActiveCom2()/ 1000;
+            com1Standby = (float)connector.getStandbyCom2()/ 1000;
             break;
         case 2:
-            com1Active = connector.getActiveNav1();
-            com1Standby = connector.getStandbyNav1();
+            com1Active = (float)connector.getActiveNav1()/ 1000;
+            com1Standby = (float)connector.getStandbyNav1()/ 1000;
             break;
         case 3:
-            com1Active = connector.getActiveNav2();
-            com1Standby = connector.getStandbyNav2();
+            com1Active = (float)connector.getActiveNav2()/ 1000;
+            com1Standby = (float)connector.getStandbyNav2()/ 1000;
             break;
         default:
-            com1Active = connector.getActiveCom1();
-            com1Standby = connector.getStandbyCom1();
+            com1Active = (float)connector.getActiveCom1()/ 1000;
+            com1Standby = (float)connector.getStandbyCom1()/ 1000;
             break;
     }
 
@@ -467,11 +464,11 @@ void g1000Mode(){
 float percentage = 0.01;
 void checkEncoders(){
 
-    innerCount = encoderInner.getCount();
+    innerCount = (long)encoderInner.getCount();
 
     if(innerCount!=oldInnerCount){
         if(mode == RADIO){
-            int cmd;
+            int cmd = 0;
             switch(radioDisplayed){
                 case 0:
                     cmd = (innerCount < oldInnerCount) ? sendCom1FractInc: sendCom1FractDecr ;
@@ -485,9 +482,11 @@ void checkEncoders(){
                 case 3:
                     cmd = (innerCount < oldInnerCount) ? sendIncFractNav2: sendDecFractNav2 ;
                     break;
+                default:
+                    break;
             }
 
-            connector.send(cmd);
+            BitsAndDroidsFlight32::send(cmd);
         } else if (mode == FUEL){
             int gvalue = (innerCount > oldInnerCount) ? 250 : 251;
             Serial.println(gvalue);
@@ -503,9 +502,9 @@ void checkEncoders(){
         oldInnerCount = innerCount;
     }
 
-    outerCount = encoderOuter.getCount();
+    outerCount =(long) encoderOuter.getCount();
     if(outerCount != oldOuterCount){
-        int cmd;
+        int cmd = 0;
         if(mode == RADIO){
             switch(radioDisplayed){
                 case 0:
@@ -520,9 +519,11 @@ void checkEncoders(){
                 case 3:
                     cmd = (outerCount > oldOuterCount) ? sendIncWholeNav2: sendDecWholeNav2 ;
                     break;
+                default:
+                    break;
             }
 
-            connector.send(cmd);
+            BitsAndDroidsFlight32::send(cmd);
         }
         if(mode == G1000){
             //Page down/up GPS
@@ -533,7 +534,7 @@ void checkEncoders(){
         oldOuterCount = outerCount;
     }
 
-    lowerCount = encoderLower.getCount();
+    lowerCount = (long)encoderLower.getCount();
     if(abs(lowerCount-oldLowerCount) > 1){
         mode = (lowerCount > oldLowerCount) ? mode-1 : mode+1;
         oldLowerCount = lowerCount;
@@ -544,15 +545,14 @@ void checkEncoders(){
             mode = 1;
         }
     }
-    delay(15);
 
     if(digitalRead(btnDual) == LOW){
         if(mode == G1000){
             //GPS enter button
-            connector.send(5004);
+            BitsAndDroidsFlight32::send(5004);
         }
         else if(mode == RADIO){
-            int cmd;
+            int cmd = sendSwapCom1;
             switch(radioDisplayed){
                 case 0:
                     cmd = sendSwapCom1;
@@ -566,10 +566,12 @@ void checkEncoders(){
                 case 3:
                     cmd = sendSwapNav2;
                     break;
+                default:
+                    break;
             }
-            connector.send(cmd);
+            BitsAndDroidsFlight32::send(cmd);
         }
-        delay(150);
+        delay(250);
     }
     if(digitalRead(btnLower) == LOW){
         if(mode == RADIO){
@@ -590,7 +592,7 @@ void registeredTouch(){
 
         for(auto & button: buttonArray){
             if((t_x > button.xStart && t_x < button.xStart + button.width) && (t_y > button.yStart && t_y < button.yStart + button.height)){
-                connector.send(button.command);
+                BitsAndDroidsFlight32::send(button.command);
             }
         }
     }
@@ -598,7 +600,7 @@ void registeredTouch(){
     if(mode == G1000){
         for(auto & button: g1000Array){
             if((t_x > button.xStart && t_x <button.xStart + button.width) && (t_y > button.yStart && t_y < button.yStart + button.height)){
-                connector.send(button.command);
+                BitsAndDroidsFlight32::send(button.command);
             }
         }
         delay(200);
@@ -617,7 +619,7 @@ void initFuelScreen(){
     byte bars = 4;
     byte width = 20;
 
-    int height = 0.6 * screenHeight;
+    int height = (int)(0.6 * screenHeight);
     byte yBar = (screenHeight - height) / 2;
     int barMargin = (screenWidth - width * bars) / (bars + 1);
 
@@ -636,9 +638,9 @@ void initFuelScreen(){
 
     }
 }
-void percentageBar(float percentage, square parent){
+void percentageBar(float percentageToSet, square parent){
 
-    int bar = percentage * parent.height;
+    int bar =(int) percentageToSet * parent.height;
     square value = {
             parent.xStart,
             parent.yStart + (parent.height - bar),
@@ -666,38 +668,34 @@ void fuelMode(){
         initFuelScreen();
         fuelDrawn = true;
 
-        percentageBar(leftAuxFuel / 100.0,barContainer[0]);
+        percentageBar((float)(leftAuxFuel / 100.0),barContainer[0]);
         oldLAux = leftAuxFuel;
 
-        percentageBar(leftMainFuel / 100.0,barContainer[1]);
+        percentageBar((float)(leftMainFuel / 100.0),barContainer[1]);
         oldLMain = leftMainFuel;
 
-        percentageBar(rightMainFuel / 100.0,barContainer[2]);
+        percentageBar((float)(rightMainFuel / 100.0),barContainer[2]);
         oldRMain = rightMainFuel;
 
-        percentageBar(rightAuxFuel / 100.0,barContainer[3]);
+        percentageBar((float)(rightAuxFuel / 100.0),barContainer[3]);
         oldRAux = rightAuxFuel;
 
     }
 
-
-    float percentageChanged;
-
-
     if(oldLAux != leftAuxFuel){
-        percentageBar(leftAuxFuel / 100.0,barContainer[0]);
+        percentageBar((float)(leftAuxFuel / 100.0),barContainer[0]);
         oldLAux = leftAuxFuel;
     }
     if(oldLMain != leftMainFuel){
-        percentageBar(leftMainFuel / 100.0,barContainer[1]);
+        percentageBar((float)(leftMainFuel / 100.0),barContainer[1]);
         oldLMain = leftMainFuel;
     }
     if(oldRMain != rightMainFuel){
-        percentageBar(rightMainFuel / 100.0,barContainer[2]);
+        percentageBar((float)(rightMainFuel / 100.0),barContainer[2]);
         oldRMain = rightMainFuel;
     }
     if(oldRAux != rightAuxFuel){
-        percentageBar(rightAuxFuel / 100.0,barContainer[3]);
+        percentageBar((float)(rightAuxFuel / 100.0),barContainer[3]);
         oldRAux = rightAuxFuel;
     }
 
@@ -712,15 +710,17 @@ void touchCheck(){
 
 void setup(){
     Serial.begin(115200);
-    mode = RADIO;
+    mode = ALT;
     tft.setRotation(1);
     tft.init();
     encoderLower.attachHalfQuad(14,27);
+    encoderOuter.attachHalfQuad(5,26);
+    encoderInner.attachHalfQuad(25,33);
     pinMode(14, INPUT_PULLUP);
     pinMode(27, INPUT_PULLUP);
-    encoderOuter.attachHalfQuad(32,33);
 
-    encoderInner.attachHalfQuad(25,26);
+
+
     pinMode(btnDual, INPUT_PULLUP);
     pinMode(btnLower, INPUT_PULLUP);
 
@@ -730,9 +730,149 @@ void setup(){
 
 void initAltMode(){
     tft.fillScreen(TFT_BLACK);
+    tft.setFreeFont(FSSB9);
+
+    square leftSquare ={
+            85,
+            25,
+            150,
+            screenHeight-50,
+            static_cast<int16_t>(TFT_WHITE)
+    };
+
+    drawFillSquare(leftSquare);
+
+    square leftSquareInner ={
+            85+2,
+            25+2,
+            150-4,
+            screenHeight-50-4,
+            static_cast<int16_t>(TFT_BLACK)
+    };
+
+    drawFillSquare(leftSquareInner);
+
+    square rightSquare ={
+            90+150+20,
+            25,
+            150,
+            screenHeight-50,
+            static_cast<int16_t>(TFT_WHITE)
+    };
+
+    drawFillSquare(rightSquare);
+
+    square rightSquareInner ={
+            90+150+20+2,
+            25+2,
+            150-4,
+            screenHeight-50-4,
+            static_cast<int16_t>(TFT_BLACK)
+    };
+
+
+    drawFillSquare(rightSquareInner);
+
+
+
+    roundedSquare sqAltLeft = {
+            APFirstColXCoords - 8,
+            APFirtstRowYCoords - 10,
+            100,
+            40,
+            5,
+            static_cast<int16_t>(TFT_GOLD)
+    };
+    //This is a weird name for a square...
+    roundedSquare sqAltRight = {
+            APSecondColXCoords - 8,
+            APFirtstRowYCoords - 10,
+            100,
+            40,
+            5,
+            static_cast<int16_t>(TFT_GOLD)
+    };
+
+    drawFillRoundRect(sqAltLeft);
+    drawFillRoundRect(sqAltRight);
+
+    tft.drawString("INDICATED",85+24, 25 -5);
+    tft.drawString("TARGET",90+150+20+37, 25 -5);
+    tft.setFreeFont(FSSB12);
+
+    tft.setTextColor(TFT_BLACK,static_cast<int16_t>(TFT_GOLD));
+    tft.drawString("ALT", APFirstColXCoords, APFirtstRowYCoords);
+    tft.drawString("ALT", APSecondColXCoords, APFirtstRowYCoords);
+
+    roundedSquare sqHDGLeft = {
+            APFirstColXCoords - 8,
+            APThirdRowYCoords - 10,
+            100,
+            40,
+            5,
+            static_cast<int16_t>(TFT_ORANGE)
+    };
+    //This is a weird name for a square...
+    roundedSquare sqHDGRight = {
+            APSecondColXCoords - 8,
+            APThirdRowYCoords - 10,
+            100,
+            40,
+            5,
+            static_cast<int16_t>(TFT_ORANGE)
+    };
+
+    drawFillRoundRect(sqHDGLeft);
+    drawFillRoundRect(sqHDGRight);
+
+    tft.setTextColor(TFT_BLACK,static_cast<int16_t>(TFT_ORANGE));
+    tft.drawString("HDG", APFirstColXCoords, APThirdRowYCoords);
+    tft.drawString("HDG", APSecondColXCoords, APThirdRowYCoords);
+
+    roundedSquare sqVSLeft = {
+            APFirstColXCoords - 8,
+            APFifthRowYCoords - 10,
+            100,
+            40,
+            5,
+            static_cast<int16_t>(TFT_RED)
+    };
+    //This is a weird name for a square...
+    roundedSquare sqVSRight = {
+            APSecondColXCoords - 8,
+            APFifthRowYCoords - 10,
+            100,
+            40,
+            5,
+            static_cast<int16_t>(TFT_RED)
+    };
+
+    drawFillRoundRect(sqVSLeft);
+    drawFillRoundRect(sqVSRight);
+
+    tft.setTextColor(TFT_BLACK,static_cast<int16_t>(TFT_RED));
+    tft.drawString("VS", APFirstColXCoords, APFifthRowYCoords);
+    tft.drawString("VS", APSecondColXCoords, APFifthRowYCoords);
+
+    tft.setTextColor(TFT_WHITE,static_cast<int16_t>(TFT_WHITE));
+
+    tft.drawNumber(connector.getIndicatedAltitude(), APFirstColXCoords, APSecondRowYCoords);
+    tft.drawNumber(connector.getApAltLock(), APSecondColXCoords, APSecondRowYCoords);
+    tft.drawNumber(connector.getIndicatedHeading(), APFirstColXCoords, APFourthRowYCoords);
+    tft.drawNumber(connector.getApHeadingLock(), APSecondColXCoords, APFourthRowYCoords);
+    tft.drawNumber(connector.getTrueVerticalSpeed(), APFirstColXCoords, APSixthRowYCoords);
+    tft.drawNumber(connector.getApVerticalSpeed(), APSecondColXCoords, APSixthRowYCoords);
+
+
 }
 
 int oldAlt = 0;
+int oldHDG = 0;
+int oldVS = 0;
+int oldAltLock = 0;
+int oldHDGLock = 0;
+int oldVSLock = 0;
+
 void altMode(){
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
     if(!altDrawn){
@@ -740,10 +880,37 @@ void altMode(){
         resetDrawBooleans();
         altDrawn = true;
     }
-    int curAlt = connector.getCurAltC();
+    int curAlt = connector.getIndicatedAltitude();
     if(oldAlt != curAlt){
-        tft.drawNumber(curAlt,100,100);
+        tft.drawString("           ", APFirstColXCoords, APSecondRowYCoords);
+        tft.drawNumber(curAlt,APFirstColXCoords, APSecondRowYCoords);
         oldAlt = curAlt;
+    }
+    int curHDG = connector.getIndicatedHeading();
+    if(oldHDG != curHDG){
+        tft.drawNumber(curHDG,APFirstColXCoords, APFourthRowYCoords);
+        oldHDG = curHDG;
+    }
+    int curVS = connector.getTrueVerticalSpeed();
+    if (oldVS != curVS){
+        tft.drawNumber(curVS,APSecondColXCoords, APSixthRowYCoords);
+        oldVS = curVS;
+    }
+    int curAltLock = connector.getApAltLock();
+    if(oldAltLock != curAltLock){
+        tft.drawString("           ", APSecondColXCoords, APSecondRowYCoords);
+        tft.drawNumber(curAltLock,APSecondColXCoords, APSecondRowYCoords);
+        oldAltLock = curAltLock;
+    }
+    int curHDGLock = connector.getApHeadingLock();
+    if(oldHDGLock != curHDGLock){
+        tft.drawNumber(curHDGLock,APSecondColXCoords, APFourthRowYCoords);
+        oldHDGLock = curHDGLock;
+    }
+    int curVSLock = connector.getApVerticalSpeed();
+    if(oldVSLock != curVSLock){
+        tft.drawNumber(curVSLock,APSecondColXCoords, APSixthRowYCoords);
+        oldVSLock = curVSLock;
     }
 }
 

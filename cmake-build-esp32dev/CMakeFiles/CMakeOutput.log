@@ -1,7 +1,7 @@
 The target system is: Generic -  - 
-The host system is: Windows - 10.0.22621 - AMD64
+The host system is: Windows - 10.0.22000 - AMD64
 Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
-Compiler: C:/Qt/Tools/mingw730_64/bin/gcc.exe 
+Compiler: C:/QtWindows/Tools/mingw810_64/bin/gcc.exe 
 Build flags: 
 Id flags:  
 
@@ -11,10 +11,10 @@ The output was:
 
 Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.exe"
 
-The C compiler identification is GNU, found in "C:/Users/dave-/Documents/GitHub/FlightCompanion/cmake-build-esp32dev/CMakeFiles/3.20.2/CompilerIdC/a.exe"
+The C compiler identification is GNU, found in "C:/Users/Dave Riedel/Documents/Arduino/lcdFinal/cmake-build-esp32dev/CMakeFiles/3.23.2/CompilerIdC/a.exe"
 
 Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
-Compiler: C:/Qt/Tools/mingw730_64/bin/g++.exe 
+Compiler: C:/QtWindows/Tools/mingw810_64/bin/c++.exe 
 Build flags: 
 Id flags:  
 
@@ -24,5 +24,5 @@ The output was:
 
 Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.exe"
 
-The CXX compiler identification is GNU, found in "C:/Users/dave-/Documents/GitHub/FlightCompanion/cmake-build-esp32dev/CMakeFiles/3.20.2/CompilerIdCXX/a.exe"
+The CXX compiler identification is GNU, found in "C:/Users/Dave Riedel/Documents/Arduino/lcdFinal/cmake-build-esp32dev/CMakeFiles/3.23.2/CompilerIdCXX/a.exe"
 

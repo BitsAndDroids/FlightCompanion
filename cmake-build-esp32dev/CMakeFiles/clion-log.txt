@@ -1,14 +1,4 @@
-"C:\Program Files\JetBrains\CLion 2021.2\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=esp32dev -DCMAKE_DEPENDS_USE_COMPILER=FALSE -G "CodeBlocks - MinGW Makefiles" C:\Users\dave-\Documents\GitHub\FlightCompanion
--- The C compiler identification is GNU 7.3.0
--- The CXX compiler identification is GNU 7.3.0
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - failed
--- Detecting C compile features
--- Detecting C compile features - done
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - failed
--- Detecting CXX compile features
--- Detecting CXX compile features - done
+F:\JetBrains\apps\CLion\ch-0\222.3345.126\bin\cmake\win\bin\cmake.exe -DCMAKE_BUILD_TYPE=esp32dev -DCMAKE_MAKE_PROGRAM=F:/JetBrains/apps/CLion/ch-0/222.3345.126/bin/ninja/win/ninja.exe -G Ninja -S "C:\Users\Dave Riedel\Documents\Arduino\lcdFinal" -B "C:\Users\Dave Riedel\Documents\Arduino\lcdFinal\cmake-build-esp32dev"
 -- Configuring done
 -- Generating done
--- Build files have been written to: C:/Users/dave-/Documents/GitHub/FlightCompanion/cmake-build-esp32dev
+-- Build files have been written to: C:/Users/Dave Riedel/Documents/Arduino/lcdFinal/cmake-build-esp32dev
