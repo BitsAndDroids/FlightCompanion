@@ -1,3 +1,4 @@
+#include "Arduino.h"
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "modernize-use-nodiscard"
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
