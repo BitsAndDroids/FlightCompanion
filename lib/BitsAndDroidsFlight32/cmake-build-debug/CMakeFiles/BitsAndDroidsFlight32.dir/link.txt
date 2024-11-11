@@ -1,2 +1,0 @@
-C:\avr-gcc-11.1.0-x64-windows\bin\avr-ar.exe qc libBitsAndDroidsFlight32.a CMakeFiles/BitsAndDroidsFlight32.dir/BitsAndDroidsFlight32.cpp.obj
-C:\avr-gcc-11.1.0-x64-windows\bin\avr-ranlib.exe libBitsAndDroidsFlight32.a

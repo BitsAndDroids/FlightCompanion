@@ -1,4 +1,0 @@
-F:\JetBrains\apps\CLion\ch-0\222.3345.126\bin\cmake\win\bin\cmake.exe -DCMAKE_BUILD_TYPE=esp32dev -DCMAKE_MAKE_PROGRAM=F:/JetBrains/apps/CLion/ch-0/222.3345.126/bin/ninja/win/ninja.exe -G Ninja -S "C:\Users\Dave Riedel\Documents\Arduino\lcdFinal" -B "C:\Users\Dave Riedel\Documents\Arduino\lcdFinal\cmake-build-esp32dev"
--- Configuring done
--- Generating done
--- Build files have been written to: C:/Users/Dave Riedel/Documents/Arduino/lcdFinal/cmake-build-esp32dev

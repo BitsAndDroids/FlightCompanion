@@ -1,4 +1,0 @@
-C:/Users/Dave Riedel/Documents/Arduino/libraries/BitsAndDroidsFlight32/cmake-build-debug/CMakeFiles/leonardo_CORE.dir
-C:/Users/Dave Riedel/Documents/Arduino/libraries/BitsAndDroidsFlight32/cmake-build-debug/CMakeFiles/BitsAndDroidsFlight32.dir
-C:/Users/Dave Riedel/Documents/Arduino/libraries/BitsAndDroidsFlight32/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Dave Riedel/Documents/Arduino/libraries/BitsAndDroidsFlight32/cmake-build-debug/CMakeFiles/rebuild_cache.dir
