@@ -405,6 +405,11 @@ void checkEncoders() {
   innerCount = (long)encoderInner.getCount();
 
   if (innerCount != oldInnerCount) {
+    if (mode == ALT) {
+      APEncoderEvent(conn,
+                     innerCount > oldInnerCount ? ENCODER_UP : ENCODER_DOWN,
+                     APRow(APTargetSelected));
+    }
     if (mode == RADIO) {
       int cmd = 0;
       switch (radioDisplayed) {
