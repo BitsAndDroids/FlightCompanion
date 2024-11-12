@@ -33,6 +33,7 @@
 
 .pio
 .pio/*
+.pio/build
 .idea
 .cache
 
