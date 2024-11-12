@@ -5,13 +5,14 @@
 #define FLIGHTCOMPANION_ELEMENTS_H
 
 #include "Arduino.h"
+#include "BitsAndDroidsFlightConnector.h"
 #include "TFT_eSPI.h"
 #include <cstdint>
 #define xMargin 30
 #define margin 20
 
-#define APFirstColXCoords 120
-#define APSecondColXCoords 293
+#define APFirstColXCoords 150
+#define APSecondColXCoords 323
 
 #define APFirtstRowYCoords 60
 #define APSecondRowYCoords 100
@@ -22,6 +23,8 @@
 #define AP_INDICATOR_X (APSecondColXCoords + 120)
 #define AP_INDICATOR_SIZE 21
 #define AP_INDICATOR_RADIUS 5
+
+#define AP_BTN_RADIUS 40
 
 const int AP_ROW_COORDS[] = {APFirtstRowYCoords, APThirdRowYCoords,
                              APFifthRowYCoords};
@@ -40,6 +43,14 @@ struct roundedSquare {
   int width;
   int height;
   byte cornerRadius;
+  int16_t color;
+  int command;
+};
+
+struct circle {
+  int xStart;
+  int yStart;
+  int radius;
   int16_t color;
   int command;
 };
@@ -68,37 +79,18 @@ enum APRow {
   AP_VERTICAL_SPEED,
 };
 
+extern circle APMasterTouchZone;
+
+void drawFillRoundRect(TFT_eSPI &tft, roundedSquare toDraw);
+
 void drawRoundedLeftTriangle(TFT_eSPI &tft, int x, int y, int size,
-                             int cornerRadius, uint32_t color) {
-  // Calculate triangle points
-  int topX = x + size;
-  int topY = y;
-  int bottomX = x + size;
-  int bottomY = y + size;
-  int tipX = x + (size / 3);
-  int tipY = y + (size / 2);
+                             int cornerRadius, uint32_t color);
 
-  // Draw main triangle
-  tft.fillTriangle(topX, topY, bottomX, bottomY, tipX, tipY, color);
+void drawAPIndicator(TFT_eSPI &tft, APRow activeRow);
 
-  // Add rounded corners using circles
-  // tft.fillCircle(topX + cornerRadius, topY + cornerRadius, cornerRadius,
-  //                color); // Top right corner
-  // tft.fillCircle(bottomX - cornerRadius, bottomY - cornerRadius,
-  // cornerRadius,
-  //                color);                           // Bottom right corner
-  // tft.fillCircle(tipX, tipY, cornerRadius, color); // Left point
-}
+void drawAPFieldsBg(TFT_eSPI &tft, BitsAndDroidsFlightConnector &conn);
 
-void drawAPIndicator(TFT_eSPI &tft, APRow activeRow) {
-  // Clear all indicators first
-  for (int i = 0; i < 3; i++) {
-    drawRoundedLeftTriangle(tft, AP_INDICATOR_X, AP_ROW_COORDS[i],
-                            AP_INDICATOR_SIZE, AP_INDICATOR_RADIUS, TFT_BLACK);
-  }
+void drawAPFields(TFT_eSPI &tft, BitsAndDroidsFlightConnector &conn);
 
-  // Draw active indicator
-  drawRoundedLeftTriangle(tft, AP_INDICATOR_X, AP_ROW_COORDS[activeRow],
-                          AP_INDICATOR_SIZE, AP_INDICATOR_RADIUS, TFT_GREEN);
-}
+void drawAPButton(TFT_eSPI &tft, BitsAndDroidsFlightConnector &conn);
 #endif // FLIGHTCOMPANION_ELEMENTS_H

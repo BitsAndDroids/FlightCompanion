@@ -1,5 +1,6 @@
 #include "elements.h"
 #include "events.h"
+#include "poll_fields.h"
 #include <Arduino.h>
 #include <BitsAndDroidsFlightConnector.h>
 #include <ESP32Encoder.h>
@@ -18,7 +19,6 @@ ESP32Encoder encoderOuter;
 ESP32Encoder encoderInner;
 ESP32Encoder encoderLower;
 
-enum MODES { RADIO = 1, FUEL = 2, G1000 = 3, ALT = 4 };
 enum APTarget { ALTAP, HDGAP, VSAP };
 byte APTargetSelected = ALTAP;
 byte mode = RADIO;
@@ -56,10 +56,6 @@ void drawFillTriangle(triangle toDraw) {
                    toDraw.color);
 }
 
-void drawFillRoundRect(roundedSquare toDraw) {
-  tft.fillRoundRect(toDraw.xStart, toDraw.yStart, toDraw.width, toDraw.height,
-                    toDraw.cornerRadius, toDraw.color);
-}
 square values[4] = {{0}};
 square barContainer[4] = {{0}};
 
@@ -192,8 +188,8 @@ void addButtons() {
     // holds 1,2...9,0 in order
     buttonArray[i] = newButtonTop;
     buttonArray[i + size / 2] = newButtonBottom;
-    drawFillRoundRect(newButtonTop);
-    drawFillRoundRect(newButtonBottom);
+    drawFillRoundRect(tft, newButtonTop);
+    drawFillRoundRect(tft, newButtonBottom);
     tft.setTextColor(TFT_BLACK, color);
     tft.drawString(textTop, newButtonTop.xStart + newButtonTop.width / 2 - 6,
                    newButtonTop.yStart + newButtonTop.height / 2 - 9);
@@ -237,7 +233,7 @@ void initializeRadio() {
   tft.fillScreen(TFT_BLACK);
   drawFillSquare(greySquare);
   drawFillSquare(innerSquare);
-  drawFillRoundRect(swapButton);
+  drawFillRoundRect(tft, swapButton);
   drawFillSquare(swapGraphicSquare);
   drawFillTriangle(rightPointTriangle);
   drawFillTriangle(leftPointTriangle);
@@ -364,13 +360,13 @@ void g1000Mode() {
     for (int i = 0; i < 12; i++) {
       buttonArray[i].command = g1000Actions[i];
     }
-    drawFillRoundRect(g1000Menu);
-    drawFillRoundRect(g1000Procedure);
-    drawFillRoundRect(g1000FPLN);
-    drawFillRoundRect(g1000Plus);
-    drawFillRoundRect(g1000Min);
-    drawFillRoundRect(g1000Dir);
-    drawFillRoundRect(g1000Clear);
+    drawFillRoundRect(tft, g1000Menu);
+    drawFillRoundRect(tft, g1000Procedure);
+    drawFillRoundRect(tft, g1000FPLN);
+    drawFillRoundRect(tft, g1000Plus);
+    drawFillRoundRect(tft, g1000Min);
+    drawFillRoundRect(tft, g1000Dir);
+    drawFillRoundRect(tft, g1000Clear);
     tft.drawString("MENU", g1000Menu.xStart + g1000Menu.width / 5 - 4,
                    g1000Menu.yStart + g1000Menu.height / 2 - 9);
     tft.drawString("PRCD", g1000Procedure.xStart + g1000Procedure.width / 5 - 4,
@@ -439,7 +435,7 @@ void checkEncoders() {
       Serial.println(gvalue);
     } else if (mode == G1000) {
       // Group down/up GPS
-      int gvalue = (innerCount > oldInnerCount) ? 5000 : 5001;
+      int gvalue = (innerCount > oldInnerCount) ? 5001 : 5000;
       Serial.println(gvalue);
     }
 
@@ -498,7 +494,9 @@ void checkEncoders() {
   }
 
   if (digitalRead(btnDual) == LOW) {
-    if (mode == G1000) {
+    if (mode == ALT) {
+      APButtonEvent(conn, APRow(APTargetSelected), tft);
+    } else if (mode == G1000) {
       // GPS enter button
       conn.send(5004);
     } else if (mode == RADIO) {
@@ -538,6 +536,14 @@ void checkEncoders() {
 void registeredTouch() {
 
   t_y = 0 + (320 - t_y);
+  if (mode == ALT) {
+    if ((t_x > APMasterTouchZone.xStart &&
+         t_x < APMasterTouchZone.xStart + APMasterTouchZone.radius) &&
+        (t_y > APMasterTouchZone.yStart &&
+         t_y < APMasterTouchZone.yStart + APMasterTouchZone.radius)) {
+      conn.send(APMasterTouchZone.command);
+    }
+  }
   if (mode == RADIO || mode == G1000) {
 
     for (auto &button : buttonArray) {
@@ -555,8 +561,8 @@ void registeredTouch() {
         conn.send(button.command);
       }
     }
-    delay(200);
   }
+  delay(200);
 }
 
 byte oldLMain;
@@ -661,77 +667,36 @@ void initAltMode() {
   tft.setFreeFont(&FreeSansBold9pt7b);
   drawAPIndicator(tft, APRow(APTargetSelected));
 
-  square leftSquare = {85, 25, 150, screenHeight - 50,
+  square leftSquare = {APFirstColXCoords - 35, 25, 150, screenHeight - 50,
                        static_cast<int16_t>(TFT_WHITE)};
 
   drawFillSquare(leftSquare);
 
-  square leftSquareInner = {85 + 2, 25 + 2, 150 - 4, screenHeight - 50 - 4,
+  square leftSquareInner = {APFirstColXCoords - 33, 25 + 2, 150 - 4,
+                            screenHeight - 50 - 4,
                             static_cast<int16_t>(TFT_BLACK)};
 
   drawFillSquare(leftSquareInner);
 
-  square rightSquare = {90 + 150 + 20, 25, 150, screenHeight - 50,
+  square rightSquare = {APSecondColXCoords - 33, 25, 150, screenHeight - 50,
                         static_cast<int16_t>(TFT_WHITE)};
 
   drawFillSquare(rightSquare);
 
-  square rightSquareInner = {90 + 150 + 20 + 2, 25 + 2, 150 - 4,
+  square rightSquareInner = {APSecondColXCoords - 31, 25 + 2, 150 - 4,
                              screenHeight - 50 - 4,
                              static_cast<int16_t>(TFT_BLACK)};
 
   drawFillSquare(rightSquareInner);
 
-  roundedSquare sqAltLeft = {
-      APFirstColXCoords - 8,         APFirtstRowYCoords - 10, 100, 40, 5,
-      static_cast<int16_t>(TFT_GOLD)};
-  // This is a weird name for a square...
-  roundedSquare sqAltRight = {
-      APSecondColXCoords - 8,        APFirtstRowYCoords - 10, 100, 40, 5,
-      static_cast<int16_t>(TFT_GOLD)};
-
-  drawFillRoundRect(sqAltLeft);
-  drawFillRoundRect(sqAltRight);
-
-  tft.drawString("INDICATED", 85 + 24, 25 - 5);
-  tft.drawString("TARGET", 90 + 150 + 20 + 37, 25 - 5);
+  tft.drawString("INDICATED", APFirstColXCoords, 25 - 5);
+  tft.drawString("TARGET", APSecondColXCoords, 25 - 5);
   tft.setFreeFont(&FreeSansBold12pt7b);
 
-  tft.setTextColor(TFT_BLACK, static_cast<int16_t>(TFT_GOLD));
-  tft.drawString("ALT", APFirstColXCoords, APFirtstRowYCoords);
-  tft.drawString("ALT", APSecondColXCoords, APFirtstRowYCoords);
-
-  roundedSquare sqHDGLeft = {
-      APFirstColXCoords - 8,           APThirdRowYCoords - 10, 100, 40, 5,
-      static_cast<int16_t>(TFT_ORANGE)};
-  // This is a weird name for a square...
-  roundedSquare sqHDGRight = {
-      APSecondColXCoords - 8,          APThirdRowYCoords - 10, 100, 40, 5,
-      static_cast<int16_t>(TFT_ORANGE)};
-
-  drawFillRoundRect(sqHDGLeft);
-  drawFillRoundRect(sqHDGRight);
-
-  tft.setTextColor(TFT_BLACK, static_cast<int16_t>(TFT_ORANGE));
-  tft.drawString("HDG", APFirstColXCoords, APThirdRowYCoords);
-  tft.drawString("HDG", APSecondColXCoords, APThirdRowYCoords);
-
-  roundedSquare sqVSLeft = {
-      APFirstColXCoords - 8,        APFifthRowYCoords - 10, 100, 40, 5,
-      static_cast<int16_t>(TFT_RED)};
-  // This is a weird name for a square...
-  roundedSquare sqVSRight = {
-      APSecondColXCoords - 8,       APFifthRowYCoords - 10, 100, 40, 5,
-      static_cast<int16_t>(TFT_RED)};
-
-  drawFillRoundRect(sqVSLeft);
-  drawFillRoundRect(sqVSRight);
-
-  tft.setTextColor(TFT_BLACK, static_cast<int16_t>(TFT_RED));
-  tft.drawString("VS", APFirstColXCoords, APFifthRowYCoords);
-  tft.drawString("VS", APSecondColXCoords, APFifthRowYCoords);
+  drawAPFields(tft, conn);
 
   tft.setTextColor(TFT_WHITE, static_cast<int16_t>(TFT_WHITE));
+  tft.drawString("AP", 38, tft.getViewportHeight() / 2 + 50);
 
   tft.drawNumber(conn.getIndicatedAltitude(), APFirstColXCoords,
                  APSecondRowYCoords);
@@ -789,6 +754,7 @@ void altMode() {
   }
   int curVSLock = conn.getApVerticalSpeed();
   if (oldVSLock != curVSLock) {
+    tft.drawString("           ", APSecondColXCoords, APSixthRowYCoords);
     tft.drawNumber(curVSLock, APSecondColXCoords, APSixthRowYCoords);
     oldVSLock = curVSLock;
   }
@@ -798,6 +764,7 @@ void loop() {
   conn.dataHandling();
   checkEncoders();
   touchCheck();
+  poll_fields(conn, MODES(mode), tft);
 
   switch (mode) {
   case RADIO:
